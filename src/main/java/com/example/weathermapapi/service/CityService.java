@@ -1,6 +1,7 @@
 package com.example.weathermapapi.service;
 
 import com.example.weathermapapi.dto.CityDto;
+import com.example.weathermapapi.exception.CityDoesNotExistException;
 import com.example.weathermapapi.repository.ICityRepository;
 import com.example.weathermapapi.httpRequest.IHttpRequestExecutor;
 import lombok.RequiredArgsConstructor;
@@ -34,14 +35,8 @@ public class CityService implements ICityService
                     .lat(cityDto.getLat())
                     .lon(cityDto.getLon())
                     .build();
-            saveCity(city);
+            cityRepository.save(city);
         }
-    }
-
-    @Override
-    public void saveCity(City city)
-    {
-        cityRepository.save(city);
     }
 
     @Override
@@ -50,10 +45,14 @@ public class CityService implements ICityService
         return cityRepository.findCityByName(name);
     }
 
-    private CityDto fetchCity(String cityName)
+    private CityDto fetchCity(String cityName) throws CityDoesNotExistException
     {
         String url = String.format(API_CITY_URL, cityName, APP_ID);
         List<CityDto> cityDtoList = Arrays.stream(httpRequestExecutor.executeGetRequest(url, CityDto[].class)).toList();
+        if(cityDtoList.size() == 0)
+        {
+            throw new CityDoesNotExistException("There is no city with the specified name!");
+        }
         return cityDtoList.get(0);
     }
 }

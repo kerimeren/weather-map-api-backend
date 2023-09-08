@@ -102,7 +102,8 @@ public class PollutionService implements IPollutionService
             if(!(date.atStartOfDay().toInstant(ZoneOffset.UTC).getEpochSecond() > UNIX_TIME_27_11_2020))
             {
                 log.warn("The dates you required includes an invalid date, i.e. a date before 2020-11-27!");
-                throw new DateOutOfRangeException("Invalid date");
+                throw new DateOutOfRangeException("The start date you required is invalid, " +
+                        "i.e. a date before 2020-11-27!");
             }
             else
             {
